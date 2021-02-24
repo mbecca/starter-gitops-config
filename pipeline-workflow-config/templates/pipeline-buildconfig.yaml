@@ -1,0 +1,29 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: {{ .Values.app.name}}-workflow-pipeline
+spec:
+  failedBuildsHistoryLimit: 3
+  nodeSelector: {}
+  output: {}
+  postCommit: {}
+  resources: {}
+  runPolicy: Parallel
+  source:
+    git:
+      ref: master
+      uri: 'git@dgsiaf-gitlab.mecon.ar:ingenieria/openshift-pipeline-workflow.git'
+    sourceSecret:
+      name: public-deploy-key
+    type: Git
+  strategy:
+    jenkinsPipelineStrategy:
+      env:
+        - name: PIPELINE_PROJECT_NAME
+          value: {{ .Values.cicd.project.name}}
+      jenkinsfilePath: >-
+        src/main/groovy/ar/gob/mecon/dgsiaf/ing/openshift/pipeline/workflow/Jenkinsfile.groovy
+    type: JenkinsPipeline
+  successfulBuildsHistoryLimit: 7
+status:
+  lastVersion: 0

@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: <replaceme>
+  namespace: argocd
+spec:
+  destination:
+    namespace: starter-dev
+    server: https://kubernetes.default.svc
+  project: starter
+  source:
+    path: appConfig
+    repoURL: <replaceme>
+    targetRevision: master
+    helm:
+      parameters:
+        - name: deploymentConfig.replicas
+          value: "1"
+        - name: deploymentConfig.image.imageTag
+          value: sha256:15a236cef342fe72e5ba13a0045010bcbe7ab7fe2d23d7c4d264959de65d61c5
+        - name: liquibase.gitRef
+          value: 958cbc72aa5133b1268c50ff5e8005888f458083
+        - name: liquibase.jobName
+          value: "starter-liquibase-job"
+        - name: liquibase.databaseUrl
+          value: "jdbc:h2:mem:myDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+        - name: liquibase.databaseUser
+          value: "c2E="
+        - name: liquibase.databasePassword
+          value: '""'
+  syncPolicy: {}

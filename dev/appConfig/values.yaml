@@ -1,0 +1,84 @@
+projectName: <CHARTNAME>-dev
+
+deploymentConfig:
+   replicas: 1
+   image:
+     repository: image-registry.openshift-image-registry.svc:5000/<CHARTNAME>/<CHARTNAME>
+     pullPolicy: Always
+     imageTag: "will_changed_by_cicd"
+     imageTagSeparator: "@"
+   ports:
+     - containerPort: 8080
+       protocol: TCP
+       name: app
+     - containerPort: 8778
+       protocol: TCP
+       name: jolokia
+     - containerPort: 9080
+       protocol: TCP
+       name: actuator
+   livenessProbe:
+     failureThreshold: 3
+     httpGet:
+       path: /actuator/health/liveness
+       port: 9080
+       scheme: HTTP
+     initialDelaySeconds: 1
+     periodSeconds: 10
+     successThreshold: 1
+     timeoutSeconds: 120
+   readinessProbe:
+     failureThreshold: 3
+     httpGet:
+       path: /actuator/health/liveness
+       port: 9080
+       scheme: HTTP
+     initialDelaySeconds: 1
+     periodSeconds: 10
+     successThreshold: 1
+     timeoutSeconds: 3
+   resources:
+     limits:
+       memory: 512Mi
+     requests:
+       memory: 256Mi
+   strategy:
+     activeDeadlineSeconds: 21600
+     recreateParams:
+       timeoutSeconds: 600
+     type: Recreate
+   volumeMounts:
+     - mountPath: /config
+       name: logback-config
+     - mountPath: /secrets
+       name: secrets-volume
+       readOnly: true
+     - mountPath: /configMaps
+       name: configmaps-volume
+       readOnly: true    
+
+app:
+   name: <CHARTNAME>
+   
+route:
+  hostname: <CHARTNAME>-dev.apps.lab-okd4.mecon.ar
+  port:
+    targetPort: 8080-tcp    
+   
+liquibase:
+  enabled: <REPLACEME>
+  jobName: <CHARTNAME>-job
+  activeDeadlineSeconds: 900
+  backoffLimit: 1
+  gitRef: "will_changed_by_cicd"
+  taskName: "update -s"
+  gradlewRootPath: "./gradlew"
+  image: image-registry.openshift-image-registry.svc:5000/dgsiaf-homologado/liquibase-gradle-image:latest
+  databaseUrl: '""'
+  contexts: "dev"
+  taskExtraParams: '""'
+  databaseUser: "Y2hhbmdlbWU=" #changeme
+  databasePassword: "Y2hhbmdlbWU=" #changeme
+  httpProxy: '"172.20.16.29"'
+  httpProxyPort: '"3128"'
+  httpNonProxy: '"mecon.ar"'

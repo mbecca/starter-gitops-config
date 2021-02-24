@@ -1,0 +1,65 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"  
+  labels:
+    app: {{ .Values.app.name}}
+  name: {{ .Values.app.name}}
+spec:
+  replicas: {{ .Values.deploymentConfig.replicas}}
+  revisionHistoryLimit: 5
+  selector:
+    app: {{ .Values.app.name}}
+    deploymentconfig: {{ .Values.app.name}}
+  strategy: {{- toYaml .Values.deploymentConfig.strategy | nindent 4 }}    
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: {{ .Values.app.name}}
+        deploymentconfig: {{ .Values.app.name}}
+    spec:
+      containers:
+        - image: "{{ .Values.deploymentConfig.image.repository }}{{ .Values.deploymentConfig.image.imageTagSeparator }}{{ .Values.deploymentConfig.image.imageTag }}"
+          imagePullPolicy: {{ .Values.deploymentConfig.image.pullPolicy }}
+          livenessProbe: {{- toYaml .Values.deploymentConfig.livenessProbe | nindent 12}}    
+          readinessProbe: {{- toYaml .Values.deploymentConfig.readinessProbe | nindent 12}}    
+          name: {{ .Values.app.name}}
+          ports: {{- toYaml .Values.deploymentConfig.ports | nindent 12}}    
+          resources:
+            limits:
+              memory: {{ .Values.deploymentConfig.resources.limits.memory}}
+            requests:
+              memory: {{ .Values.deploymentConfig.resources.requests.memory}}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts: {{- toYaml .Values.deploymentConfig.volumeMounts | nindent 12 }}    
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: {{ .Values.app.name}}-logback-config
+          name: logback-config
+        - name: secrets-volume
+          secret:
+            defaultMode: 420
+            secretName: {{ .Values.app.name}}-secret
+        - configMap:
+            defaultMode: 420
+            name: {{ .Values.app.name}}-configmap
+          name: configmaps-volume
+  test: false
+  triggers:
+    - type: ConfigChange
+status:
+  observedGeneration: 0
+  availableReplicas: 0
+  unavailableReplicas: 0
+  latestVersion: 0
+  updatedReplicas: 0
+  replicas: 1

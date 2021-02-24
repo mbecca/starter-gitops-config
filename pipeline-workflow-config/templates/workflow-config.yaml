@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.name}}-workflow-config
+data:
+  admin.group.name: OKD_Ingenieria
+  admin.users.mail.recipients: mbecca@mecon.gov.ar
+  agent.name: {{ .Values.agent.name}}
+  agent.type: {{ .Values.agent.type}}
+  app.name: {{ .Values.app.name}}
+  bc.from.dir: {{ .Values.bc.from.dir}}
+  cicd.project.name: {{ .Values.cicd.project.name}}
+  code.analysis: >-
+    ./gradlew compileJava dependencyCheckAnalyze sonarQube
+    -Dsonar.host.url={{ .Values.code.analysis.sonar.host}}
+    -Dsonar.login={{ .Values.code.analysis.sonar.login}}
+    -Dsonar.projectKey={{ .Values.app.name}} -Dhttps.proxyHost={{ .Values.code.analysis.sonar.proxyHost}}
+    -Dhttp.proxyHost={{ .Values.code.analysis.sonar.proxyHost}} -Dhttps.proxyPort={{ .Values.code.analysis.sonar.proxyPort}} -Dhttp.proxyPort={{ .Values.code.analysis.sonar.proxyPort}}
+    -PdependencyCheck.data.directory=/home/jenkins/{{ .Values.app.name}}-workflow-pipeline/dependencyCheck/data/
+    -x test
+  code.analysis.result.path: {{ .Values.code.analysis.result.path}}
+  code.build: {{ .Values.code.build.command}}
+  code.build.artifact.path: {{ .Values.code.build.artifact.path}}
+  code.coverage.command: {{ .Values.code.coverage.command}}
+  code.test.integration.tests: {{ .Values.code.test.integration.tests.command}}
+  code.test.unit.tests: {{ .Values.code.test.unit.tests.command}}
+  dev.project.belonging.cluster.type: internal
+  dev.project.enabled: {{ .Values.dev.project.enabled}}
+  dev.project.name: {{ .Values.dev.project.name}}
+  functional.tests.result.path: {{ .Values.functional.tests.result.path}}
+  functionalTests.type: {{ .Values.functionalTests.type}}
+  git.deploy.key: {{ .Values.cicd.project.name}}-public-deploy-key
+  git.url: {{ .Values.git.url}}
+  gradle.opts: {{ .Values.gradle.opts}}
+  image.pods.test: {{ .Values.image.pods.test}}
+  integration.tests.result.path: {{ .Values.integration.tests.result.path}}
+  internal.cluster.docker.registry.url: {{ .Values.internal.cluster.docker.registry.url}}
+  internal.docker.registry.credential: {{ .Values.cicd.project.name}}-internal-docker-registry
+  liquibase.enabled: {{ .Values.liquibase.enabled}}
+  main.develop.branch.name: {{ .Values.main.develop.branch.name}}
+  post.action.command: {{ .Values.post.action.command}}
+  prep.project.belonging.cluster.type: productive
+  prep.project.enabled: {{ .Values.prep.project.enabled}}
+  prep.project.name: {{ .Values.prep.project.name}}  
+  prod.cluster.docker.registry.url: {{ .Values.prod.cluster.docker.registry.url}}
+  prod.cluster.name: prod-cluster
+  prod.project.belonging.cluster.type: productive
+  prod.project.enabled: {{ .Values.prod.project.enabled}}  
+  prod.project.name: {{ .Values.prod.project.name}}  
+  pvcName.pods.test: slaves-container-pvc
+  resourceLimitMemory.pods.test: {{ .Values.resourceLimitMemory.pods.test}}  
+  run.code.analysis: {{ .Values.run.code.analysis}}  
+  run.integration.tests: {{ .Values.run.integration.tests}}
+  run.unit.tests: {{ .Values.run.unit.tests}}
+  stagging.project.belonging.cluster.type: internal
+  stagging.project.enabled: {{ .Values.stagging.project.enabled}}
+  stagging.project.name: {{ .Values.stagging.project.name}}
+  test.project.belonging.cluster.type: internal
+  test.project.enabled: {{ .Values.test.project.enabled}}
+  test.project.name: {{ .Values.test.project.name}}
+  unit.tests.result.path: {{ .Values.unit.tests.result.path}}
+  workflow.name: {{ .Values.app.name}}-workflow-pipeline
+  workflow.pods.availables.test: {{ .Values.workflow.pods.availables.test}}
+  workflow.registry.prod.cluster.credential: {{ .Values.cicd.project.name}}-registry-prod-cluster-credential
+  workflow.timeout:  {{ .Values.workflow.timeout}}

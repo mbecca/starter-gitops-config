@@ -1,0 +1,90 @@
+{{- if .Values.liquibase.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  name: {{ .Values.liquibase.jobName}}
+spec:
+  activeDeadlineSeconds: {{ .Values.liquibase.activeDeadlineSeconds}}
+  completions: 1
+  parallelism: 1
+  backoffLimit: {{ .Values.liquibase.backoffLimit}}
+  template:
+    metadata:
+      name: {{ .Values.liquibase.jobName}}
+    spec:
+      containers:
+        - env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: starter-liquibase-configmap 
+                  key: liquibase.database.url  
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: starter-liquibase-secret
+                  key: liquibase.database.user
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: starter-liquibase-secret
+                  key: liquibase.database.password
+            - name: GIT_URL
+              value: git@dgsiaf-gitlab.mecon.ar:openshift/openshift-app-starter.git
+            - name: GIT_REF
+              value: {{ .Values.liquibase.gitRef}}
+            - name: GRADLE_ROOT_PATH
+              value: {{ .Values.liquibase.gradlewRootPath}}  
+            - name: LIQUIBASE_TASK
+              value: {{ .Values.liquibase.taskName}}  
+            - name: LIQUIBASE_CONTEXTS
+              valueFrom:
+                configMapKeyRef:
+                  name: starter-liquibase-configmap 
+                  key: liquibase.contexts
+            - name: LIQUIBASE_TASK_EXTRA_PARAMS
+              valueFrom:
+                configMapKeyRef:
+                  name: starter-liquibase-configmap 
+                  key: liquibase.task.extra.params        
+            - name: DEPLOY_TOKEN
+              value: 'deploy_token:d3pl0y_t0k3n'
+            - name: HTTP_PROXY
+              value: {{ .Values.liquibase.httpProxy}}
+            - name: HTTP_PROXY_PORT
+              value: {{ .Values.liquibase.httpProxyPort}}
+            - name: HTTP_NON_PROXY
+              value: {{ .Values.liquibase.httpNonProxy}}
+            - name: HTTPS_PROXY
+              value: {{ .Values.liquibase.httpProxy}}
+            - name: HTTPS_PROXY_PORT
+              value: {{ .Values.liquibase.httpProxyPort}}                        
+          image: {{ .Values.liquibase.image}}
+          imagePullPolicy: Always
+          name: {{ .Values.liquibase.jobName}}
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /liquibase/secrets
+              name: {{ .Values.liquibase.jobName}}-secret-volume
+              readOnly: true
+            - mountPath: /liquibase/configMaps
+              name: {{ .Values.liquibase.jobName}}-configmap-volume
+              readOnly: true  
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: {{ .Values.liquibase.jobName}}-secret-volume
+          secret:
+            defaultMode: 420
+            secretName: starter-liquibase-secret
+        - name: {{ .Values.liquibase.jobName}}-configmap-volume
+          configMap:
+            name: starter-liquibase-configmap
+{{- end }}              

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  labels:
+    app:  {{ .Values.app.name}}
+  name:  {{ .Values.app.name}}
+spec:
+  ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8778-tcp
+      port: 8778
+      protocol: TCP
+      targetPort: 8778
+    - name: 9080-tcp
+      port: 9080
+      protocol: TCP
+      targetPort: 9080  
+  selector:
+    app:  {{ .Values.app.name}}
+    deploymentconfig:  {{ .Values.app.name}}
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

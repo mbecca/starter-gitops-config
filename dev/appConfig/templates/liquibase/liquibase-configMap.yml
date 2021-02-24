@@ -1,0 +1,12 @@
+{{- if .Values.liquibase.enabled }}
+apiVersion: v1
+data:
+  liquibase.database.url: {{ .Values.liquibase.databaseUrl}}
+  liquibase.contexts: {{ .Values.liquibase.contexts}}
+  liquibase.task.extra.params: {{ .Values.liquibase.taskExtraParams}}
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  name: {{ .Values.app.name}}-liquibase-configmap
+{{- end }}    

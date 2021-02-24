@@ -1,0 +1,113 @@
+agent:
+  name: maven
+  type: maven
+
+bc:
+  from:
+    dir: build/libs/
+
+code:
+  analysis:
+    sonar:
+      host: http://sonarqube.desa-originpaas.mecon.ar/
+      login: 6fc51c2a8265a6ed840b98fdd4131d4214538119
+      proxyHost: 172.20.16.29
+      proxyPort: 3128
+    result:
+      path: "''"
+  build: 
+    command: ./gradlew assemble -s
+    artifact:
+      path: "'build/libs/*.jar,build/libs/*.war'"
+  coverage:
+    command: ./gradlew jacocoAggregatedReport -s
+  test:
+    integration:
+      tests:
+        command: ./gradlew integrationTests -s      
+    unit:
+      tests:
+        command: ./gradlew test -s
+        
+dev:
+  project:
+    enabled: "'false'"
+
+functional:
+  tests:
+    result:
+      path: functionalTests/results/*.xml
+      
+functionalTests:
+  type: cypress
+  
+gradle:
+  opts: "'-Dorg.gradle.internal.launcher.welcomeMessageEnabled=false'"
+  
+image:
+  pods:
+    test: image-registry.openshift-image-registry.svc:5000/dgsiaf-homologado/cypress-nodejs:1.0.1
+    
+integration:
+  tests:
+    result:
+      path: build/test-results/integrationTests/*.xml
+
+internal:
+  cluster:
+    docker:
+      registry:
+        url: image-registry.openshift-image-registry.svc:5000
+
+main:
+ develop:
+    branch:
+      name: develop
+
+post:
+  action:
+    command: "''"
+
+prep:
+  project:
+    enabled: "'false'"
+
+prod:
+  project:
+    enabled: "'false'"
+  cluster:
+    docker:
+      registry:
+        url: image-registry.openshift-image-registry.svc:5000 #FIXME ver url correcta de prod
+
+resourceLimitMemory:
+  pods:
+    test: 1024Mi
+    
+run:
+  code:
+    analysis: "'true'"
+  integration:
+    tests: "'true'"
+  unit:
+    tests: "'true'"
+    
+stagging:
+  project:
+    enabled: "'false'"
+
+test:
+  project:
+    enabled: "'false'"
+
+unit:
+  tests:
+    result:
+      path: build/test-results/test/*.xml
+      
+workflow:
+  pods:
+    availables:
+      test: "'1'"
+  timeout: "'30'"                          
+  

@@ -1,0 +1,35 @@
+Se deben sobrescribir las siguientes claves dependiendo del ambiente:
+
+app:
+  name:
+
+dev:
+  project:
+    name:
+    
+liquibase:
+  enabled: 
+      
+test:
+  project:
+    name:
+    
+stagging:
+  project:
+    name:
+    
+prep:
+  project:
+    name:
+    
+prod:
+  project:
+    name:
+
+git:
+  url:
+
+cicd:
+  project:
+    name:
+      
