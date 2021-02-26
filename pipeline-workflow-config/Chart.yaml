@@ -1,5 +1,5 @@
 apiVersion: v2
-name: <CHARTNAME>-workflow-config
+name: <replaceme>-workflow-config
 description: Artefactos que representan a la configuración general del pipeline
 type: application
 version: 1.0.0
