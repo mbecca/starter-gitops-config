@@ -1,4 +1,4 @@
-projectName: <CHARTNAME>-dev
+projectName: <replaceme>-dev
 
 deploymentConfig:
    replicas: 1
@@ -58,16 +58,16 @@ deploymentConfig:
        readOnly: true    
 
 app:
-   name: <CHARTNAME>
+   name: <replaceme>
    
 route:
-  hostname: <CHARTNAME>-dev.apps.lab-okd4.mecon.ar
+  hostname: <replaceme>-dev.apps.lab-okd4.mecon.ar
   port:
     targetPort: 8080-tcp    
    
 liquibase:
-  enabled: <REPLACEME>
-  jobName: <CHARTNAME>-job
+  enabled: <replaceme>
+  jobName: <replaceme>-job
   activeDeadlineSeconds: 900
   backoffLimit: 1
   gitRef: "will_changed_by_cicd"
