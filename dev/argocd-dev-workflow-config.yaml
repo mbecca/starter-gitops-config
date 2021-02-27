@@ -17,15 +17,15 @@ spec:
     repoURL: git@dgsiaf-gitlab.mecon.ar:openshift/okd4/cicd/pipeline-workflow-config-charts.git
     targetRevision: <replaceme>
     helm:
-      values: |
-        app:
-          name: <replaceme>
-        build:
-          suscribers: <replaceme>
-        mail:
-          recipients: <replaceme>
-        team:
-          members: <replaceme>
+      parameters:
+        - name: app.name
+          value: <replaceme>
+        - name: build.suscribers
+          value: <replaceme>
+        - name: mail.recipients
+          value: <replaceme>
+        - name: team.members
+          value: <replaceme>
   syncPolicy:
     automated:
       prune: true
